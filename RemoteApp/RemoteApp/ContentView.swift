@@ -1,24 +1,20 @@
-//
-//  ContentView.swift
-//  RemoteApp
-//
-//  Created by miyazaki yuna on 2026/04/16.
-//
-
+//ここで画面レイアウトを変更
 import SwiftUI
 
-struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+struct ContentView: View { //viewプロトコルに準拠した型の構造体ってこと
+    let sender = CommandSender()//コマンド送信係の定義
+
+    var body: some View {//some: パフォーマンス面のロスを減らしてくれる　▶︎無理のないパフォーマンスのview型
+        VStack(spacing: 20) { //ボタンを縦に並べる
+
+            Button("Forward") { //画面にforwardボタン表示
+                sender.send(.forward) //ボタンが押されたらコマンド送信
+            }
+
+            Button("Stop") {
+                sender.send(.stop)
+            }
         }
         .padding()
     }
-}
-
-#Preview {
-    ContentView()
 }

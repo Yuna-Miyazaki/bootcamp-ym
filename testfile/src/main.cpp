@@ -4,77 +4,110 @@
 #include <WebServer.h>
 #include <WiFi.h>
 
-// ===== WiFi設定 =====
-const char *ssid = "mm2020";
-const char *password = "a3b7a2ede5bfb02fd5124b13f766f369";
+// ===== WiFi =====
+const char *ssid = "iPhone (15)";
+const char *password = "stfg15fe146br";
 
-// ===== Webサーバ =====
+// ===== Web =====
 WebServer server(80);
 
-// ===== サーボ =====
+// ===== Servo =====
 SMS_STS st;
 HardwareSerial servoSerial(1);
 
-// ===== モード設定関数 =====
+// ===== UART (UnitV2) =====
+HardwareSerial camSerial(2);
+
+// ===== モード =====
+enum Mode { STOP, FORWARD, BACKWARD };
+Mode mode = STOP;
+
+// ===== スピード =====
+int speedVal = 50;
+
+// ===== WiFiハンドラ =====
+void handleForward() {
+  mode = FORWARD;
+  server.send(200, "text/plain", "forward");
+}
+
+void handleBackward() {
+  mode = BACKWARD;
+  server.send(200, "text/plain", "backward");
+}
+
+void handleStop() {
+  mode = STOP;
+  server.send(200, "text/plain", "stop");
+}
+
+// ===== サーボ =====
 void setWheelMode(int id) {
   st.unLockEprom(id);
-  st.writeByte(id, 33, 1); // Wheel Mode
+  st.writeByte(id, 33, 1);
   st.LockEprom(id);
   delay(50);
 }
 
-// ===== フラグ受信時の処理 =====
-void handleFlag() {
-  Serial.println("にゃーん！");
-  M5.Display.println("Nyaaan!");
-
-  server.send(200, "text/plain", "OK");
-}
-
-// ===== セットアップ =====
+// ===== setup =====
 void setup() {
   auto cfg = M5.config();
   M5.begin(cfg);
 
   Serial.begin(115200);
 
-  // ===== WiFi接続 =====
-  M5.Display.println("Connecting WiFi...");
+  // ===== WiFi =====
   WiFi.begin(ssid, password);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    M5.Display.print(".");
   }
 
-  M5.Display.fillScreen(TFT_BLACK);
-  M5.Display.setCursor(0, 0);
-  M5.Display.println("Connected!");
-  M5.Display.println(WiFi.localIP());
-
-  Serial.println(WiFi.localIP());
-
-  // ===== Webサーバ設定 =====
-  server.on("/flag", handleFlag); // http://IP/flag で発火
+  server.on("/forward", handleForward);
+  server.on("/backward", handleBackward);
+  server.on("/stop", handleStop);
   server.begin();
 
-  // ===== サーボ初期化 =====
+  // ===== Servo =====
   servoSerial.begin(1000000, SERIAL_8N1, 8, 7);
   st.pSerial = &servoSerial;
 
-  delay(1000);
-
-  // ID1,2 をホイールモードに
   setWheelMode(1);
   setWheelMode(2);
 
-  // 前進し続ける
-  st.WriteSpe(1, 1500, 50);
-  st.WriteSpe(2, 1500, 50);
+  // ===== UnitV2 UART =====
+  camSerial.begin(115200, SERIAL_8N1, 1, 2);
+
+  delay(1000);
+
+  Serial.println("SYSTEM READY");
 }
 
-// ===== ループ =====
+// ===== loop =====
 void loop() {
-  M5.update();
-  server.handleClient(); // リクエスト待ち
+  server.handleClient();
+
+  // ===== モータ制御 =====
+  if (mode == FORWARD) {
+    st.WriteSpe(1, 1500, speedVal);
+    st.WriteSpe(2, 1500, speedVal);
+  } else if (mode == BACKWARD) {
+    st.WriteSpe(1, 1500, -speedVal);
+    st.WriteSpe(2, 1500, -speedVal);
+  } else {
+    st.WriteSpe(1, 0, 0);
+    st.WriteSpe(2, 0, 0);
+  }
+
+  // ===== カメラ受信 =====
+  if (camSerial.available()) {
+    String line = camSerial.readStringUntil('\n');
+    Serial.println(line);
+
+    // ===== bottle検出 =====
+    if (line.indexOf("\"type\":\"bottle\"") != -1) {
+      Serial.println("🐱 にゃーん！");
+    }
+  }
+
+  delay(20);
 }

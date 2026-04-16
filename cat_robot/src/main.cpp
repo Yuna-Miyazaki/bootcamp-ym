@@ -5,8 +5,8 @@
 #include <WiFi.h>
 
 // ===== WiFi設定 =====
-const char *ssid = "mm2020";
-const char *password = "a3b7a2ede5bfb02fd5124b13f766f369";
+const char *ssid = "iPhone (15)";
+const char *password = "stfg15fe146br";
 
 // ===== Webサーバ =====
 WebServer server(80);
@@ -15,7 +15,14 @@ WebServer server(80);
 SMS_STS st;
 HardwareSerial servoSerial(1);
 
-// ===== モード設定関数 =====
+// ===== モード管理 =====
+enum Mode { STOP, FORWARD, BACKWARD };
+Mode mode = STOP;
+
+// ===== スピード =====
+int speed = 50; // 必要なら変更
+
+// ===== サーボモード設定 =====
 void setWheelMode(int id) {
   st.unLockEprom(id);
   st.writeByte(id, 33, 1); // Wheel Mode
@@ -23,12 +30,38 @@ void setWheelMode(int id) {
   delay(50);
 }
 
-// ===== フラグ受信時の処理 =====
-void handleFlag() {
-  Serial.println("にゃーん！");
-  M5.Display.println("Nyaaan!");
+// ===== HTTPハンドラ =====
+void handleForward() {
+  Serial.println("HTTP: FORWARD");
+  M5.Display.fillScreen(TFT_BLACK);
+  M5.Display.setCursor(0, 0);
+  M5.Display.println("FORWARD");
 
-  server.send(200, "text/plain", "OK");
+  mode = FORWARD;
+
+  server.send(200, "text/plain", "forward ok");
+}
+
+void handleBackward() {
+  Serial.println("HTTP: BACKWARD");
+  M5.Display.fillScreen(TFT_BLACK);
+  M5.Display.setCursor(0, 0);
+  M5.Display.println("BACKWARD");
+
+  mode = BACKWARD;
+
+  server.send(200, "text/plain", "backward ok");
+}
+
+void handleStop() {
+  Serial.println("HTTP: STOP");
+  M5.Display.fillScreen(TFT_BLACK);
+  M5.Display.setCursor(0, 0);
+  M5.Display.println("STOP");
+
+  mode = STOP;
+
+  server.send(200, "text/plain", "stop ok");
 }
 
 // ===== セットアップ =====
@@ -54,8 +87,10 @@ void setup() {
 
   Serial.println(WiFi.localIP());
 
-  // ===== Webサーバ設定 =====
-  server.on("/flag", handleFlag); // http://IP/flag で発火
+  // ===== Webサーバ =====
+  server.on("/forward", handleForward);
+  server.on("/backward", handleBackward);
+  server.on("/stop", handleStop);
   server.begin();
 
   // ===== サーボ初期化 =====
@@ -64,17 +99,30 @@ void setup() {
 
   delay(1000);
 
-  // ID1,2 をホイールモードに
+  // Wheel Mode設定
   setWheelMode(1);
   setWheelMode(2);
 
-  // 前進し続ける
-  st.WriteSpe(1, 1500, 50);
-  st.WriteSpe(2, 1500, 50);
+  // 初期停止
+  mode = STOP;
 }
 
 // ===== ループ =====
 void loop() {
   M5.update();
-  server.handleClient(); // リクエスト待ち
+  server.handleClient();
+
+  // ===== ここが無限回転の本質 =====
+  if (mode == FORWARD) {
+    st.WriteSpe(1, 1500, speed);
+    st.WriteSpe(2, 1500, speed);
+  } else if (mode == BACKWARD) {
+    st.WriteSpe(1, 1500, -speed);
+    st.WriteSpe(2, 1500, -speed);
+  } else {
+    st.WriteSpe(1, 0, 0);
+    st.WriteSpe(2, 0, 0);
+  }
+
+  delay(20); // 安定用（超重要）
 }
