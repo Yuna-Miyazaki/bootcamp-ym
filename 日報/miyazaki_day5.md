@@ -46,7 +46,7 @@
         Serial2.println("{\"function\":\"Object Recognition\",\"args\":[\"nanodet_80class\"]}"); で物体認識モードに切り替えて、
         if (Serial2.available()) {
             Serial.println(Serial2.readStringUntil('\n'));
-        }でカメラからのメッセージを受け取れた
+        }でカメラからのメッセージをatoms3で受け取れた
 2. 
 
 
