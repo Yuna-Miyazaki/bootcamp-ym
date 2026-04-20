@@ -4,125 +4,148 @@
 #include <WebServer.h>
 #include <WiFi.h>
 
-// ===== WiFi設定 =====
+// ===== WiFi =====
 const char *ssid = "iPhone (15)";
 const char *password = "stfg15fe146br";
 
-// ===== Webサーバ =====
-WebServer server(80);
+// ===== Web =====
+WebServer server(80); // http通信をポート80で立ち上げ
 
-// ===== サーボ =====
+// ===== Servo =====
 SMS_STS st;
 HardwareSerial servoSerial(1);
 
-// ===== モード管理 =====
-enum Mode { STOP, FORWARD, BACKWARD };
+// ===== UART (UnitV2) =====
+HardwareSerial camSerial(2);
+
+// ===== モード =====
+enum Mode { STOP, FORWARD, BACKWARD, TURNRIGHT, TURNLEFT };
 Mode mode = STOP;
 
 // ===== スピード =====
-int speed = 50; // 必要なら変更
+int speedVal = 50;
+int bigspeed = 80;
+int smallspeed = 30;
 
-// ===== サーボモード設定 =====
+// ===== WiFiハンドラ =====
+void handleForward() {
+  mode = FORWARD;
+  Serial.println("COMMAND: FORWARD"); // ←追加
+  server.send(200, "text/plain", "forward");
+}
+
+void handleBackward() {
+  mode = BACKWARD;
+  Serial.println("COMMAND: BACKWARD"); // ←追加
+  server.send(200, "text/plain", "backward");
+}
+
+void handleStop() {
+  mode = STOP;
+  Serial.println("COMMAND: STOP"); // ←追加
+  server.send(200, "text/plain", "stop");
+}
+
+void handleTurnRight() {
+  mode = TURNRIGHT;
+  Serial.println("COMMAND: TURN RIGHT"); // ←追加
+  server.send(200, "text/plain", "turnright");
+}
+
+void handleTurnLeft() {
+  mode = TURNLEFT;
+  Serial.println("COMMAND: TURN LEFT"); // ←追加
+  server.send(200, "text/plain", "turnleft");
+}
+
+// ===== サーボ =====
 void setWheelMode(int id) {
   st.unLockEprom(id);
-  st.writeByte(id, 33, 1); // Wheel Mode
+  st.writeByte(id, 33, 1);
   st.LockEprom(id);
   delay(50);
 }
 
-// ===== HTTPハンドラ =====
-void handleForward() {
-  Serial.println("HTTP: FORWARD");
-  M5.Display.fillScreen(TFT_BLACK);
-  M5.Display.setCursor(0, 0);
-  M5.Display.println("FORWARD");
-
-  mode = FORWARD;
-
-  server.send(200, "text/plain", "forward ok");
-}
-
-void handleBackward() {
-  Serial.println("HTTP: BACKWARD");
-  M5.Display.fillScreen(TFT_BLACK);
-  M5.Display.setCursor(0, 0);
-  M5.Display.println("BACKWARD");
-
-  mode = BACKWARD;
-
-  server.send(200, "text/plain", "backward ok");
-}
-
-void handleStop() {
-  Serial.println("HTTP: STOP");
-  M5.Display.fillScreen(TFT_BLACK);
-  M5.Display.setCursor(0, 0);
-  M5.Display.println("STOP");
-
-  mode = STOP;
-
-  server.send(200, "text/plain", "stop ok");
-}
-
-// ===== セットアップ =====
+// ===== setup =====
 void setup() {
-  auto cfg = M5.config();
-  M5.begin(cfg);
+  auto cfg =
+      M5.config(); // m5ライブラリが持ってるm5のデフォルト設定を取得してcfgに保存
+  M5.begin(cfg);   // 取得した情報でM5を初期化し起動
 
   Serial.begin(115200);
 
-  // ===== WiFi接続 =====
-  M5.Display.println("Connecting WiFi...");
-  WiFi.begin(ssid, password);
+  // ===== WiFi =====
+  M5.Display.println("Connecting WiFi..."); // 追加分
 
+  WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     M5.Display.print(".");
   }
 
-  M5.Display.fillScreen(TFT_BLACK);
+  M5.Display.fillScreen(TFT_BLACK); // ここから
   M5.Display.setCursor(0, 0);
-  M5.Display.println("Connected!");
-  M5.Display.println(WiFi.localIP());
+  M5.Display.println("WiFi Connected!");
+  M5.Display.println(WiFi.localIP().toString()); // ここまで追加分
 
-  Serial.println(WiFi.localIP());
-
-  // ===== Webサーバ =====
+  //~/forwardみたいなurlが来たらhandleForward関数を呼ぶ
   server.on("/forward", handleForward);
   server.on("/backward", handleBackward);
   server.on("/stop", handleStop);
+  server.on("/turnright", handleTurnRight);
+  server.on("/turnleft", handleTurnLeft);
   server.begin();
 
-  // ===== サーボ初期化 =====
-  servoSerial.begin(1000000, SERIAL_8N1, 8, 7);
+  // ===== Servo =====
+  servoSerial.begin(1000000, SERIAL_8N1, 8, 7); // サーボ起動
   st.pSerial = &servoSerial;
 
-  delay(1000);
-
-  // Wheel Mode設定
-  setWheelMode(1);
+  setWheelMode(1); // id1と2を車輪(無限に回転するモード)に設定
   setWheelMode(2);
 
-  // 初期停止
-  mode = STOP;
+  // ===== UnitV2 UART =====
+  camSerial.begin(115200, SERIAL_8N1, 1, 2); // カメラ起動
+  delay(1000);                               // カメラ起動待ち
+
+  // ★ここ重要：物体認識モードに切り替え
+  camSerial.println(
+      "{\"function\":\"Object Recognition\",\"args\":[\"nanodet_80class\"]}");
+  Serial.println("Camera: Object Recognition Mode ON");
+
+  Serial.println("SYSTEM READY");
 }
 
-// ===== ループ =====
+// ===== loop =====
 void loop() {
-  M5.update();
   server.handleClient();
 
-  // ===== ここが無限回転の本質 =====
+  // ===== モータ制御 =====
   if (mode == FORWARD) {
-    st.WriteSpe(1, 1500, speed);
-    st.WriteSpe(2, 1500, speed);
+    st.WriteSpe(1, 1500, speedVal); //(2個目の変数が回転速度やんけ！！！！)
+    st.WriteSpe(2, 1500, speedVal);
   } else if (mode == BACKWARD) {
-    st.WriteSpe(1, 1500, -speed);
-    st.WriteSpe(2, 1500, -speed);
+    st.WriteSpe(1, -1500, speedVal);
+    st.WriteSpe(2, -1500, speedVal);
+  } else if (mode == TURNRIGHT) {
+    st.WriteSpe(1, 300, speedVal);
+    st.WriteSpe(2, 1500, speedVal);
+  } else if (mode == TURNLEFT) {
+    st.WriteSpe(1, 1500, speedVal);
+    st.WriteSpe(2, 300, speedVal);
   } else {
     st.WriteSpe(1, 0, 0);
     st.WriteSpe(2, 0, 0);
   }
 
-  delay(20); // 安定用（超重要）
+  // ===== カメラ受信 =====
+  if (camSerial.available()) {
+    String line = camSerial.readStringUntil('\n');
+    Serial.println("[CAM] " + line);
+
+    if (line.indexOf("\"type\":\"bottle\"") != -1) {
+      Serial.println("🐱 にゃーん！");
+    }
+  }
+
+  delay(20);
 }

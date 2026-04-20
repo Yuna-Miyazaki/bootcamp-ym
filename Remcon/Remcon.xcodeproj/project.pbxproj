@@ -7,16 +7,19 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		AE769C692F920AB7002FD13F /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
-		AE769C6B2F920AB7002FD13F /* CommandSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandSender.swift; sourceTree = "<group>"; };
-		AE769C6D2F920AB7002FD13F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		AE769C6E2F920AB7002FD13F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		AE769C6F2F920AB7002FD13F /* RemoteAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAppApp.swift; sourceTree = "<group>"; };
-		AE769C712F920C65002FD13F /* RemoteApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = RemoteApp.app; path = "/Users/yuna/bootcamp-ym/RemoteApp/build/Debug-iphoneos/RemoteApp.app"; sourceTree = "<absolute>"; };
+		AE769CA62F920D1A002FD13F /* Remcon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Remcon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		AE769CA82F920D1A002FD13F /* Remcon */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Remcon;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
-		AEAC7D702F90A663000C6089 /* Frameworks */ = {
+		AE769CA32F920D1A002FD13F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -26,99 +29,83 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AE769C6A2F920AB7002FD13F /* Models */ = {
+		AE769C9D2F920D1A002FD13F = {
 			isa = PBXGroup;
 			children = (
-				AE769C692F920AB7002FD13F /* Command.swift */,
+				AE769CA82F920D1A002FD13F /* Remcon */,
+				AE769CA72F920D1A002FD13F /* Products */,
 			);
-			path = Models;
 			sourceTree = "<group>";
 		};
-		AE769C6C2F920AB7002FD13F /* Services */ = {
+		AE769CA72F920D1A002FD13F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AE769C6B2F920AB7002FD13F /* CommandSender.swift */,
+				AE769CA62F920D1A002FD13F /* Remcon.app */,
 			);
-			path = Services;
-			sourceTree = "<group>";
-		};
-		AE769C702F920AB7002FD13F /* RemoteApp */ = {
-			isa = PBXGroup;
-			children = (
-				AE769C6A2F920AB7002FD13F /* Models */,
-				AE769C6C2F920AB7002FD13F /* Services */,
-				AE769C6D2F920AB7002FD13F /* Assets.xcassets */,
-				AE769C6E2F920AB7002FD13F /* ContentView.swift */,
-				AE769C6F2F920AB7002FD13F /* RemoteAppApp.swift */,
-			);
-			path = RemoteApp;
-			sourceTree = "<group>";
-		};
-		AEAC7D6A2F90A663000C6089 = {
-			isa = PBXGroup;
-			children = (
-				AE769C702F920AB7002FD13F /* RemoteApp */,
-			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AEAC7D722F90A663000C6089 /* RemoteApp */ = {
+		AE769CA52F920D1A002FD13F /* Remcon */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AEAC7D7E2F90A664000C6089 /* Build configuration list for PBXNativeTarget "RemoteApp" */;
+			buildConfigurationList = AE769CB12F920D1C002FD13F /* Build configuration list for PBXNativeTarget "Remcon" */;
 			buildPhases = (
-				AEAC7D6F2F90A663000C6089 /* Sources */,
-				AEAC7D702F90A663000C6089 /* Frameworks */,
-				AEAC7D712F90A663000C6089 /* Resources */,
+				AE769CA22F920D1A002FD13F /* Sources */,
+				AE769CA32F920D1A002FD13F /* Frameworks */,
+				AE769CA42F920D1A002FD13F /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = RemoteApp;
+			fileSystemSynchronizedGroups = (
+				AE769CA82F920D1A002FD13F /* Remcon */,
+			);
+			name = Remcon;
 			packageProductDependencies = (
 			);
-			productName = RemoteApp;
-			productReference = AE769C712F920C65002FD13F /* RemoteApp.app */;
+			productName = Remcon;
+			productReference = AE769CA62F920D1A002FD13F /* Remcon.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		AEAC7D6B2F90A663000C6089 /* Project object */ = {
+		AE769C9E2F920D1A002FD13F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
-					AEAC7D722F90A663000C6089 = {
+					AE769CA52F920D1A002FD13F = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
 				};
 			};
-			buildConfigurationList = AEAC7D6E2F90A663000C6089 /* Build configuration list for PBXProject "RemoteApp" */;
+			buildConfigurationList = AE769CA12F920D1A002FD13F /* Build configuration list for PBXProject "Remcon" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = AEAC7D6A2F90A663000C6089;
+			mainGroup = AE769C9D2F920D1A002FD13F;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = AEAC7D6A2F90A663000C6089;
+			productRefGroup = AE769CA72F920D1A002FD13F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AEAC7D722F90A663000C6089 /* RemoteApp */,
+				AE769CA52F920D1A002FD13F /* Remcon */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		AEAC7D712F90A663000C6089 /* Resources */ = {
+		AE769CA42F920D1A002FD13F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -128,7 +115,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		AEAC7D6F2F90A663000C6089 /* Sources */ = {
+		AE769CA22F920D1A002FD13F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -138,7 +125,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		AEAC7D7C2F90A664000C6089 /* Debug */ = {
+		AE769CAF2F920D1C002FD13F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -202,7 +189,7 @@
 			};
 			name = Debug;
 		};
-		AEAC7D7D2F90A664000C6089 /* Release */ = {
+		AE769CB02F920D1C002FD13F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -259,7 +246,7 @@
 			};
 			name = Release;
 		};
-		AEAC7D7F2F90A664000C6089 /* Debug */ = {
+		AE769CB22F920D1C002FD13F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -279,7 +266,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yuna.RemoteApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yuna.Remcon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -291,7 +278,7 @@
 			};
 			name = Debug;
 		};
-		AEAC7D802F90A664000C6089 /* Release */ = {
+		AE769CB32F920D1C002FD13F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -311,7 +298,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yuna.RemoteApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yuna.Remcon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -326,25 +313,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AEAC7D6E2F90A663000C6089 /* Build configuration list for PBXProject "RemoteApp" */ = {
+		AE769CA12F920D1A002FD13F /* Build configuration list for PBXProject "Remcon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AEAC7D7C2F90A664000C6089 /* Debug */,
-				AEAC7D7D2F90A664000C6089 /* Release */,
+				AE769CAF2F920D1C002FD13F /* Debug */,
+				AE769CB02F920D1C002FD13F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AEAC7D7E2F90A664000C6089 /* Build configuration list for PBXNativeTarget "RemoteApp" */ = {
+		AE769CB12F920D1C002FD13F /* Build configuration list for PBXNativeTarget "Remcon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AEAC7D7F2F90A664000C6089 /* Debug */,
-				AEAC7D802F90A664000C6089 /* Release */,
+				AE769CB22F920D1C002FD13F /* Debug */,
+				AE769CB32F920D1C002FD13F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = AEAC7D6B2F90A663000C6089 /* Project object */;
+	rootObject = AE769C9E2F920D1A002FD13F /* Project object */;
 }
