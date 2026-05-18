@@ -3,42 +3,66 @@ import SwiftUI
 struct ContentView: View {
     let sender = CommandSender()
 
-    @State private var dragOffset = CGSize.zero
-
     var body: some View {
-        VStack {
+        VStack(spacing: 30) {
 
-            Text("Joystick Control")
-                .font(.title)
+            PressButton(
+                title: "前",
+                command: "forward",
+                sender: sender
+            )
 
-            ZStack {
-                Circle()
-                    .frame(width: 200, height: 200)
-                    .opacity(0.2)
+            HStack(spacing: 40) {
+                PressButton(
+                    title: "左",
+                    command: "turnleft",
+                    sender: sender
+                )
 
-                Circle()
-                    .frame(width: 60, height: 60)
-                    .offset(dragOffset)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { value in
-                                let dx = value.translation.width / 100
-                                let dy = value.translation.height / 100
-
-                                let x = max(min(dx, 1.0), -1.0)
-                                let y = max(min(-dy, 1.0), -1.0)
-
-                                dragOffset = value.translation
-
-                                sender.sendJoy(forward: y, turn: x)
-                            }
-                            .onEnded { _ in
-                                dragOffset = .zero
-                                sender.sendJoy(forward: 0, turn: 0)
-                            }
-                    )
+                PressButton(
+                    title: "右",
+                    command: "turnright",
+                    sender: sender
+                )
             }
+
+            PressButton(
+                title: "後ろ",
+                command: "backward",
+                sender: sender
+            )
         }
         .padding()
+    }
+}
+
+struct PressButton: View {
+    let title: String
+    let command: String
+    let sender: CommandSender
+
+    @State private var isPressed = false
+
+    var body: some View {
+        Text(title)
+            .font(.title)
+            .bold()
+            .foregroundColor(.white)
+            .frame(width: 130, height: 90)
+            .background(isPressed ? Color.orange : Color.blue)
+            .cornerRadius(20)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        if !isPressed {
+                            isPressed = true
+                            sender.sendCommand(command)
+                        }
+                    }
+                    .onEnded { _ in
+                        isPressed = false
+                        sender.sendCommand("stop")
+                    }
+            )
     }
 }

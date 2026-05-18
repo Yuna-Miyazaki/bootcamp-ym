@@ -1,17 +1,21 @@
 import Foundation
 
 class CommandSender {
-    let baseURL = "http://172.20.10.4"
+    let baseURL = "http://172.20.10.6"
 
-    func sendJoy(forward: Double, turn: Double) {
+    func sendCommand(_ command: String) {
+        let urlString = "\(baseURL)/\(command)"
 
-        let urlString = "\(baseURL)/joy?f=\(forward)&t=\(turn)"
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL:", urlString)
+            return
+        }
 
-        guard let url = URL(string: urlString) else { return }
-
-        URLSession.shared.dataTask(with: url) { _, _, err in
-            if let err = err {
-                print("error:", err)
+        URLSession.shared.dataTask(with: url) { _, _, error in
+            if let error = error {
+                print("error:", error)
+            } else {
+                print("sent:", command)
             }
         }.resume()
     }
